@@ -1,0 +1,11 @@
+Write one line of bash code for each of the following sub-tasks (assume that all the files and
+directories mentioned exist). The purpose of this task is to get you familiar a bit with the Linux
+command line.
+a) Change the current directory to a subdirectory called somedir
+b) Print out to the terminal the contents of a file called sometext.txt. The file exists in the
+current directory.
+c) Print out to the terminal the last 5 lines of a plain text file called sometext.txt. The file
+exists in the current directory.
+d) Print out to the terminal the last 5 lines of each file that ends in the extension .txt and
+lives in the current directory
+e) Write a for loop which prints each integer from 0 to 6 (including 0 an
