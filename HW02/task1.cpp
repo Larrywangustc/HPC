@@ -29,8 +29,8 @@ int main(int argc, char **argv){
     cout << duration_sec.count() << "\n";
     cout << b[0] << "\n";
     cout << b[n - 1] << "\n";
-    free(a);
-    free(b);
+    delete [] a;
+    delete [] b;
     
     return 0;
 }

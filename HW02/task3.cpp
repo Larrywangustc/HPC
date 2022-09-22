@@ -31,7 +31,7 @@ int main(){
             B_vec[n * i + j] = B[n * i + j];
         }
     }
-    cout << n << "\n";
+    cout << n << std::endl;
     double* C = new double[n * n];
     start = high_resolution_clock::now();
     mmul1(A, B, C, n);
@@ -70,7 +70,7 @@ int main(){
     cout << duration_sec4.count() << "\n";
     cout << C[n * n - 1] << "\n";
     
-    free(C);
+    delete [] C;
     delete [] A;
     delete [] B;
     return 0;
