@@ -22,12 +22,12 @@ int main(int argc, char **argv){
     srand((unsigned)time(0));
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
-            image[n * i + j] = float(-10.0) + static_cast <float> (rand()) / ( static_cast <float> (RAND_MAX/20.0));
+            image[n * i + j] = float(-10.0) + (rand()) / ( static_cast <float> (RAND_MAX/20.0));
         }
     }
     for(int i = 0; i < m; i++){
         for(int j = 0; j < m; j++){
-            mask[n * i + j] = float(-1.0) + static_cast <float> (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+            mask[m * i + j] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
         }
     }
     start = high_resolution_clock::now();

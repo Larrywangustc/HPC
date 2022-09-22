@@ -19,7 +19,7 @@ int main(int argc, char **argv){
     float* b=new float[n];
     srand((unsigned)time(0));
     for(int i=0;i<n;i++){
-        a[i] = float(-1.0) + static_cast <float> (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+        a[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
     }
     
     start = high_resolution_clock::now();
