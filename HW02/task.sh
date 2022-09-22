@@ -7,7 +7,8 @@
 g++ scan.cpp task1.cpp -Wall -O3 -std=c++17 -o task1
 for i in {10..30}
 do
-   ./task1 2^i
+   n=$((2**i))
+   ./task1 n
 done
 
 g++ convolution.cpp task2.cpp -Wall -O3 -std=c++17 -o task2
