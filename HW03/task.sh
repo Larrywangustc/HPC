@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1 --cpus-per-task=1
 #SBATCH --gres=gpu:1
 #SBATCH --gpus-per-task=1
-#SBATCH -o Slurm02.out -e Slurm02.err
+#SBATCH -o Slurm01.out -e Slurm01.err
 
 module load nvidia/cuda
 
