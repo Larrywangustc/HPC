@@ -3,7 +3,7 @@
 
 __global__ void simpleKernel(int* data, int a){
     //this adds a value to a variable stored in global memory
-    data[threadIdx.x] = a * threadIdx.x + blockIdx.x;
+    data[threadIdx.x + blockIdx.x * 8] = a * threadIdx.x + blockIdx.x;
 }
 
 int main(){
@@ -23,6 +23,7 @@ int main(){
     for (int i = 0; i < numElems; i++){
         std::cout<< hA[i] << " ";
     }
+    std::cout<<std::endl;
     //release the memory allocated on the GPU 
     cudaFree(dA);
     return 0;
