@@ -17,8 +17,7 @@ int main(int argc, char **argv){
         hA[i] = float(-10) + (rand()) / ( static_cast <float> (RAND_MAX/20));
         hB[i] = (rand()) / ( static_cast <float> (RAND_MAX));
     }
-    cudaMemcpy(dA, hA, sizeof(float) * n, cudaMemcpyHostToDevice);
-    cudaMemcpy(dB, hB, sizeof(float) * n, cudaMemcpyHostToDevice);
+c
     int k = (n - 1) / 512;
     cudaEvent_t start;
     cudaEvent_t stop;
