@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH -p wacc
-#SBATCH -t 0-00:04:00
+#SBATCH -t 0-00:07:00
 #SBATCH -J Slurm
 #SBATCH --ntasks=1 --cpus-per-task=4
 #SBATCH --gres=gpu:1

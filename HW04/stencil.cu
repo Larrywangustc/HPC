@@ -12,6 +12,7 @@ __host__ void stencil(const float* image,
 }
 
 __global__ void stencil_kernel(const float* image, const float* mask, float* output, unsigned int n, unsigned int R){
+    
     extern __shared__ float s[];
     float *Image = s;
     float *Mask = (float*)&Image[blockDim.x + 2 * R];
@@ -21,7 +22,7 @@ __global__ void stencil_kernel(const float* image, const float* mask, float* out
     int bd = blockDim.x;
     int N = n;
     int r = R;
-    
+    if(bx * bd + tx >= n){return;}
     Image[tx + r] = image[bx * bd + tx];
     if(tx < r){
         if(bx * bd + tx - r >= 0){
@@ -42,11 +43,13 @@ __global__ void stencil_kernel(const float* image, const float* mask, float* out
     }
     __syncthreads();
     float c = 0;
-    for(int j=-r;j<r+1;j++){
-        c += Image[tx + r + j] * Mask[j + r];
-    }
+    
     /*for(int j=-r;j<r+1;j++){
-        c += image[bx * bd + tx + j] * mask[j + r];
+        c += Image[tx + r + j] * Mask[j + r];
     }*/
+    
+    for(int j=-r;j<r+1;j++){
+        c += image[bx * bd + tx + j] * mask[j + r];
+    }
     output[bx * bd + tx] = c;
 }

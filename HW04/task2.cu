@@ -26,6 +26,7 @@ int main(int argc, char **argv){
     cudaMemset(dC, 0, sizeof(float) * n);
     cudaMemcpy(dA, image, sizeof(float) * n, cudaMemcpyHostToDevice);
     cudaMemcpy(dB, mask, sizeof(float) * (2 * R + 1), cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
     cudaEvent_t start;
     cudaEvent_t stop;
     float ms;
