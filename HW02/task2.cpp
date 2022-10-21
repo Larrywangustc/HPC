@@ -37,8 +37,9 @@ int main(int argc, char **argv){
     duration_sec = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
     
     std::cout << duration_sec.count() << std::endl;
-    std::cout << output[0] << std::endl;
-    std::cout << output[n * n - 1] << std::endl;
+    std::cout << std::endl;
+    //std::cout << output[0] << std::endl;
+    //std::cout << output[n * n - 1] << std::endl;
     delete [] image;
     delete [] mask;
     delete [] output;

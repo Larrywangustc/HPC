@@ -9,14 +9,15 @@ using std::cout;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
-int main(){
+int main(int argc, char **argv){
+    const int n = atoi(argv[1]);
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
     duration<double, std::milli> duration_sec1;
     duration<double, std::milli> duration_sec2;
     duration<double, std::milli> duration_sec3;
     duration<double, std::milli> duration_sec4;
-    int n = 1024;
+    //int n = 1024;
     double* A = new double[n * n];
     double* B = new double[n * n];
     std::vector<double>A_vec(n * n);
@@ -31,14 +32,14 @@ int main(){
             B_vec[n * i + j] = B[n * i + j];
         }
     }
-    cout << n << std::endl;
+    //cout << n << std::endl;
     double* C = new double[n * n];
     start = high_resolution_clock::now();
-    mmul1(A, B, C, n);
+    //mmul1(A, B, C, n);
     end = high_resolution_clock::now();
     duration_sec1 = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
-    cout << duration_sec1.count() << "\n";
-    cout << C[n * n - 1] << "\n";
+    //cout << duration_sec1.count() << "\n";
+    //cout << C[n * n - 1] << "\n";
     
     for(int i = 0; i < n * n; i++){
         C[i] = 0;
@@ -48,27 +49,27 @@ int main(){
     end = high_resolution_clock::now();
     duration_sec2 = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
     cout << duration_sec2.count() << "\n";
-    cout << C[n * n - 1] << "\n";
+    //cout << C[n * n - 1] << "\n";
 
     for(int i = 0; i < n * n; i++){
         C[i] = 0;
     }
     start = high_resolution_clock::now();
-    mmul3(A, B, C, n);
+    //mmul3(A, B, C, n);
     end = high_resolution_clock::now();
     duration_sec3 = std::chrono::duration_cast<duration<double, std::milli>>(end - start);\
-    cout << duration_sec3.count() << "\n";
-    cout << C[n * n - 1] << "\n";
+    //cout << duration_sec3.count() << "\n";
+    //cout << C[n * n - 1] << "\n";
 
     for(int i = 0; i < n * n; i++){
         C[i] = 0;
     }
     start = high_resolution_clock::now();
-    mmul4(A_vec, B_vec, C, n);
+    //mmul4(A_vec, B_vec, C, n);
     end = high_resolution_clock::now();
     duration_sec4 = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
-    cout << duration_sec4.count() << "\n";
-    cout << C[n * n - 1] << "\n";
+    //cout << duration_sec4.count() << "\n";
+    //cout << C[n * n - 1] << "\n";
     
     delete [] C;
     delete [] A;

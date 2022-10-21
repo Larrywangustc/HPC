@@ -93,14 +93,14 @@ int main(int argc, char **argv){
     std::cout << ms_double << ", ";
     std::cout << std::endl;*/
 
-    std::cout << C_int[0] << std::endl;
-    std::cout << C_int[n * n - 1] << std::endl;
+    //std::cout << C_int[0] << std::endl;
+    //std::cout << C_int[n * n - 1] << std::endl;
     std::cout << ms_int << std::endl;
-    std::cout << C_float[0] << std::endl;
-    std::cout << C_float[n * n - 1] << std::endl;
+    //std::cout << C_float[0] << std::endl;
+    //std::cout << C_float[n * n - 1] << std::endl;
     std::cout << ms_float << std::endl;
-    std::cout << C_double[0] << std::endl;
-    std::cout << C_double[n * n - 1] << std::endl;
+    //std::cout << C_double[0] << std::endl;
+    //std::cout << C_double[n * n - 1] << std::endl;
     std::cout << ms_double << std::endl;
     std::cout << std::endl;
 
