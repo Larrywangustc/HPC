@@ -17,7 +17,7 @@ nvcc task1.cu mmul.cu -Xcompiler -O3 -Xcompiler -Wall -Xptxas -O3 -lcublas -std 
 ###done
 
 nvcc task2.cu scan.cu -Xcompiler -O3 -Xcompiler -Wall -Xptxas -O3 -std c++17 -o task2
-###cuda-memcheck ./task2 1024 1024
+cuda-memcheck ./task2 100000 1024
 for i in {10..20}
 do
    n=$((2**i))
