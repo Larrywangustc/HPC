@@ -1,0 +1,7 @@
+-------------------------------------------------------------------------------
+The following dependent module(s) are not currently loaded: gcc/.11.3.0_cuda (required by: nvidia/cuda/11.6.0)
+-------------------------------------------------------------------------------
+
+The following have been reloaded with a version change:
+  1) gcc/.11.3.0_cuda => gcc/9.4.0
+
