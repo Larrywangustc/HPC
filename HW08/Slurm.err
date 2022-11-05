@@ -1,10 +1,10 @@
 msort.cpp: In function ‘void mergesort(int*, std::size_t, std::size_t)’:
-msort.cpp:40:11: warning: comparison of integer expressions of different signedness: ‘const std::size_t’ {aka ‘const long unsigned int’} and ‘int’ [-Wsign-compare]
-   40 |     if (n < k){
+msort.cpp:37:11: warning: comparison of integer expressions of different signedness: ‘const std::size_t’ {aka ‘const long unsigned int’} and ‘int’ [-Wsign-compare]
+   37 |     if (n < k){
       |         ~~^~~
-msort.cpp:42:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
-   42 |         for(i=0; i<(n-1); i++){
+msort.cpp:39:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   39 |         for(i=0; i<(n-1); i++){
       |                  ~^~~~~~
-msort.cpp:43:23: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
-   43 |             for(j=0; j<(n-i-1); j++){
+msort.cpp:40:23: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   40 |             for(j=0; j<(n-i-1); j++){
       |                      ~^~~~~~~~

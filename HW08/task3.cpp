@@ -23,8 +23,9 @@ int main(int argc, char **argv){
     for(int i = 0; i < n; i++){
         arr[i] = int(-1000) + (rand()) / ( static_cast <int> (RAND_MAX/2000));
     }
-    omp_set_num_threads(t);
+    
     start = high_resolution_clock::now();
+    omp_set_num_threads(t);
     msort(arr, n, ts);
 
     

@@ -34,9 +34,6 @@ void merge(int * X, int n) {
 
 void mergesort(int* arr, const std::size_t n, const std::size_t threshold){
     int k = threshold;
-    if (n<=1){
-        return;
-    }
     if (n < k){
         int i, j, temp;
         for(i=0; i<(n-1); i++){

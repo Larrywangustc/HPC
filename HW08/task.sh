@@ -30,5 +30,5 @@ done
 
 for i in {1..20}
 do
-   ./task3 1000000 $i 6
+   ./task3 1000000 $i 64
 done
