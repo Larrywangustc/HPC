@@ -1,4 +1,14 @@
 montecarlo.cpp: In function ‘int montecarlo(size_t, const float*, const float*, float)’:
-montecarlo.cpp:8:22: error: ‘pow’ was not declared in this scope
-    8 |         incircle += (pow(x[i], 2)+pow(y[i], 2)< pow(radius, 2)) ? 1 : 0;
-      |                      ^~~
+montecarlo.cpp:6:21: error: expected ‘#pragma omp’ clause before ‘{’ token
+    6 |     #pragma omp simd{
+      |                     ^
+montecarlo.cpp:11:5: warning: no return statement in function returning non-void [-Wreturn-type]
+   11 |     }
+      |     ^
+montecarlo.cpp: At global scope:
+montecarlo.cpp:12:5: error: expected unqualified-id before ‘return’
+   12 |     return incircle;
+      |     ^~~~~~
+montecarlo.cpp:13:1: error: expected declaration before ‘}’ token
+   13 | }
+      | ^
