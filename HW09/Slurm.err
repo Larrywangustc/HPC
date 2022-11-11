@@ -1,0 +1,4 @@
+montecarlo.cpp: In function ‘int montecarlo(size_t, const float*, const float*, float)’:
+montecarlo.cpp:8:22: error: ‘pow’ was not declared in this scope
+    8 |         incircle += (pow(x[i], 2)+pow(y[i], 2)< pow(radius, 2)) ? 1 : 0;
+      |                      ^~~
