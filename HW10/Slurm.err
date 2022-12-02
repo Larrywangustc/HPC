@@ -1,0 +1,129 @@
+task2.cpp: In function ‘int main(int, char**)’:
+task2.cpp:19:5: error: ‘MPI_Init’ was not declared in this scope
+   19 |     MPI_Init(&argc, &argv);
+      |     ^~~~~~~~
+task2.cpp:32:19: error: ‘MPI_COMM_WORLD’ was not declared in this scope
+   32 |     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+      |                   ^~~~~~~~~~~~~~
+task2.cpp:32:5: error: ‘MPI_Comm_rank’ was not declared in this scope
+   32 |     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+      |     ^~~~~~~~~~~~~
+task2.cpp:34:5: error: ‘MPI_Barrier’ was not declared in this scope
+   34 |     MPI_Barrier(MPI_COMM_WORLD);
+      |     ^~~~~~~~~~~
+task2.cpp:36:46: error: cannot convert ‘std::chrono::_V2::system_clock::time_point’ {aka ‘std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > >’} to ‘double’ in initialization
+   36 |     double start = high_resolution_clock::now();
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+      |                                              |
+      |                                              std::chrono::_V2::system_clock::time_point {aka std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > >}
+task2.cpp:38:41: error: ‘MPI_FLOAT’ was not declared in this scope; did you mean ‘MAXFLOAT’?
+   38 |     MPI_Reduce(&result, &global_res, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+      |                                         ^~~~~~~~~
+      |                                         MAXFLOAT
+task2.cpp:38:52: error: ‘MPI_SUM’ was not declared in this scope
+   38 |     MPI_Reduce(&result, &global_res, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+      |                                                    ^~~~~~~
+task2.cpp:38:5: error: ‘MPI_Reduce’ was not declared in this scope
+   38 |     MPI_Reduce(&result, &global_res, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+      |     ^~~~~~~~~~
+task2.cpp:39:44: error: cannot convert ‘std::chrono::_V2::system_clock::time_point’ {aka ‘std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > >’} to ‘double’ in initialization
+   39 |     double end = high_resolution_clock::now();
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+      |                                            |
+      |                                            std::chrono::_V2::system_clock::time_point {aka std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > >}
+task2.cpp:40:60: error: no matching function for call to ‘duration_cast<std::chrono::duration<double, std::ratio<1, 1000> > >(double)’
+   40 |     double ms = duration_cast<duration<double, std::milli>>(end - start).count();
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/12/chrono:39,
+                 from task2.cpp:6:
+/usr/include/c++/12/bits/chrono.h:252:7: note: candidate: ‘template<class _ToDur, class _Rep, class _Period> constexpr std::chrono::__enable_if_is_duration<_ToDur> std::chrono::duration_cast(const duration<_Rep, _Period>&)’
+  252 |       duration_cast(const duration<_Rep, _Period>& __d)
+      |       ^~~~~~~~~~~~~
+/usr/include/c++/12/bits/chrono.h:252:7: note:   template argument deduction/substitution failed:
+task2.cpp:40:60: note:   mismatched types ‘const std::chrono::duration<_Rep, _Period>’ and ‘double’
+   40 |     double ms = duration_cast<duration<double, std::milli>>(end - start).count();
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+task2.cpp:48:5: error: ‘MPI_Finalize’ was not declared in this scope
+   48 |     MPI_Finalize();
+      |     ^~~~~~~~~~~~
+reduce.cpp:17:24: optimized: loop vectorized using 32 byte vectors
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+srun: error: euler02: task 0: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler21: task 1: Exited with exit code 2
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+slurmstepd: error: execve(): /srv/home/zwang2832/repo759/HW10/./task2: No such file or directory
+srun: error: euler02: task 0: Exited with exit code 2
+srun: error: euler21: task 1: Exited with exit code 2
