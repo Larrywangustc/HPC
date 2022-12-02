@@ -7,9 +7,11 @@
 #include <stdio.h>
 #include <omp.h>
 #include "reduce.h"
+#include <mpi.h>
 
 using namespace std;
-using namespace std::chrono;
+using std::chrono::high_resolution_clock;
+using std::chrono::duration;
 
 
 int main(int argc, char *argv[]) {
@@ -30,15 +32,19 @@ int main(int argc, char *argv[]) {
     reduce(arr, 0, n);
     MPI_Barrier(MPI_COMM_WORLD);
 
-    double start = high_resolution_clock::now();
+    high_resolution_clock::time_point start;
+    high_resolution_clock::time_point end;
+    duration<double, std::milli> duration_sec;
+    
+    start = high_resolution_clock::now();
     float result = reduce(arr, 0, n);
     MPI_Reduce(&result, &global_res, 1, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
-    double end = high_resolution_clock::now();
-    double ms = duration_cast<duration<double, std::milli>>(end - start).count();
+    end = high_resolution_clock::now();
+    duration_sec = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
 
     if (rank == 0) {
         cout << global_res << endl;
-        cout << ms << endl;
+        cout << duration_sec.count() << endl;
         cout << endl;
     }
 

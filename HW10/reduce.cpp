@@ -1,12 +1,9 @@
 #include <cstddef>
 #include <iostream>
 #include <fstream>
-#include <random>
 #include <chrono>
 #include <sstream>
 #include <stdio.h>
-#include <cstring>
-#include <algorithm>
 #include <omp.h>
 #include "reduce.h"
 

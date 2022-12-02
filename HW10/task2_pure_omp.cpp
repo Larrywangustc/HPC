@@ -22,14 +22,18 @@ int main(int argc, char *argv[]) {
         arr[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
     }
 
-    double start = high_resolution_clock::now();
-    float result = reduce(arr, 0, n);
+    high_resolution_clock::time_point start;
+    high_resolution_clock::time_point end;
+    duration<double, std::milli> duration_sec;
     
-    double end = high_resolution_clock::now();
-    double ms = duration_cast<duration<double, std::milli>>(end - start).count();
+    start = high_resolution_clock::now();
+    float result = reduce(arr, 0, n);
+    end = high_resolution_clock::now();
+    duration_sec = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
 
-    cout << result << endl;
-    cout << ms << endl;
+
+    cout << global_res << endl;
+    cout << duration_sec.count() << endl;
     cout << endl;
 
 }
