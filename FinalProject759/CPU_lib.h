@@ -31,3 +31,4 @@ void Householdertransformation(vector<double>x, vector<double>& v, double& b) {}
 
 void HouseholderQRElimination(vector<vector<double>>& A, vector<double>& d) {};
 
+void LU_array(float** a, float** l, float** u, int size);

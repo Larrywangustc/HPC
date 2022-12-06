@@ -14,7 +14,7 @@ using namespace std;
 
 
 //Initialize a 2D matrix   
-void initialize_matrices(double** a, double** l, double** u, int size){
+void initialize_matrices(double** a, double** l, double** u, int size){ 
     for (int i = 0; i < size; ++i)
     {
         a[i] = new double[size];
