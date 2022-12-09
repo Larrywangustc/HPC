@@ -14,7 +14,7 @@ double b[N];
 // Vector of variables
 double x[N];
 
-// Number of iterations
+// Number of iterations +
 const int MAX_ITER = 1000;
 
 // Tolerance

@@ -1,37 +1,36 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <fstream>
-#include <cuda.h>
-#include <iostream>
-#include <iomanip>
-#include <time.h>
-#include <cuda_runtime.h>
-using namespace std;
-#define TILE 32
+#include <stdlib.h>             
+#include <stdio.h>              
+#include <fstream>              
+#include <cuda.h>               
+#include <iostream>             
+#include <iomanip>              
+#include <time.h>               
+#include <cuda_runtime.h>       
+using namespace std;            
+#define TILE 32                 
 
-__global__ void luDecompositionKernel(float* L, float* U, const float* A, int n)
-{
+__global__ void luDecompositionKernel(float* L, float* U, const float* A, int n){
     // Compute the updated lower and upper triangular matrices
     // at the current thread's index.
     int i = threadIdx.x;
     int j = threadIdx.y;
-    for (int k = 0; k < i; ++k)
-    {
+
+    for (int k = 0; k < i; ++k){
         U[i * n + j] -= L[i * n + k] * U[k * n + j];
         L[i * n + j] -= L[i * n + k] * L[k * n + j];
     }
-    if (i == j)
-    {
+    if (i == j){
         L[i * n + i] = 1;
     }
-    else
-    {
+    else{
         L[i * n + j] /= U[j * n + j];
         U[i * n + j] /= U[j * n + j];
     }
 }
 
+
 // Perform LU decomposition using CUDA
+
 void luDecompositionCuda(float* L, float* U, const float* A, int n)
 {
     // Allocate device memory for the lower and upper triangular matrices
@@ -43,15 +42,9 @@ void luDecompositionCuda(float* L, float* U, const float* A, int n)
     cudaMemcpy(d_L, A, n * n * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_U, A, n * n * sizeof(float), cudaMemcpyHostToDevice);
 
-    // Create a stream for the kernel launch
-    cudaStream_t stream;
-    cudaStreamCreate(&stream);
-
     // Launch the kernel
-    luDecompositionKernel<<<dim3(n, n), dim3(1, 1), 0, stream>>>(d_L, d_U, A, n);
+    luDecompositionKernel<<<dim3(n, n), dim3(1, 1), 0>>>(d_L, d_U, A, n);
 
-    // Wait for the kernel to finish
-    cudaStreamSynchronize(stream);
 
     // Copy the updated lower and upper triangular matrices from the device
     cudaMemcpy(L, d_L, n * n * sizeof(float), cudaMemcpyDeviceToHost);
@@ -61,6 +54,4 @@ void luDecompositionCuda(float* L, float* U, const float* A, int n)
     cudaFree(d_L);
     cudaFree(d_U);
 
-    // Destroy the stream
-    cudaStreamDestroy(stream);
 }
