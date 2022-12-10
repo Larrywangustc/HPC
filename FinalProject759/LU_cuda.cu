@@ -6,52 +6,94 @@
 #include <iomanip>              
 #include <time.h>               
 #include <cuda_runtime.h>       
-using namespace std;            
-#define TILE 32                 
+using namespace std;              
 
-__global__ void luDecompositionKernel(float* L, float* U, const float* A, int n){
-    // Compute the updated lower and upper triangular matrices
-    // at the current thread's index.
-    int i = threadIdx.x;
-    int j = threadIdx.y;
+#define BSZ 16
 
-    for (int k = 0; k < i; ++k){
-        U[i * n + j] -= L[i * n + k] * U[k * n + j];
-        L[i * n + j] -= L[i * n + k] * L[k * n + j];
-    }
-    if (i == j){
-        L[i * n + i] = 1;
-    }
-    else{
-        L[i * n + j] /= U[j * n + j];
-        U[i * n + j] /= U[j * n + j];
+__global__ void lu_decomposition_kernel(float *A, float *L, float *U, const int N)
+{
+    // Declare thread IDs and block size
+    int x = threadIdx.x;
+    int y = threadIdx.y;
+
+
+    __shared__ float part_sum[BSZ][BSZ];
+
+    for (int k = 0; k < N; ++k)
+    {
+        part_sum[y][x] = 0;
+        for (int i = 0; i < k; ++i)
+        {
+            part_sum[y][x] += A[k * N + i] * A[i * N + y];
+        }
+
+        __syncthreads();
+
+        // Update matrices
+        L[k * N + y] = (y == k) ? 1 : A[k * N + y] - part_sum[y][x];
+        U[k * N + y] = (y == k) ? A[k * N + k] - part_sum[y][x] : 0;
     }
 }
 
 
-// Perform LU decomposition using CUDA
 
-void luDecompositionCuda(float* L, float* U, const float* A, int n)
-{
+void luDecompositionCuda(float* L, float* U, const float* A, int n, int block_dim){
     // Allocate device memory for the lower and upper triangular matrices
-    float* d_L, *d_U;
+    float* d_L, *d_U, *d_A;
     cudaMalloc(&d_L, n * n * sizeof(float));
     cudaMalloc(&d_U, n * n * sizeof(float));
+    cudaMalloc(&d_A, n * n * sizeof(float));
 
-    // Copy the input matrix to the device
-    cudaMemcpy(d_L, A, n * n * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_U, A, n * n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_A, A, n * n * sizeof(float), cudaMemcpyHostToDevice);
 
-    // Launch the kernel
-    luDecompositionKernel<<<dim3(n, n), dim3(1, 1), 0>>>(d_L, d_U, A, n);
+    int k = (n - 1) / block_dim + 1;
+    dim3 dimBlock(block_dim, block_dim);
+    dim3 dimGrid(k, k);
+    lu_decomposition_kernel<<<dimGrid, dimBlock, block_dim * block_dim * sizeof(float)>>>(d_A, d_L, d_U, n);
 
 
-    // Copy the updated lower and upper triangular matrices from the device
     cudaMemcpy(L, d_L, n * n * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(U, d_U, n * n * sizeof(float), cudaMemcpyDeviceToHost);
 
-    // Free device memory
     cudaFree(d_L);
     cudaFree(d_U);
+    cudaFree(d_A);
+}
 
+
+int main(int argc, char **argv){
+    const int n = atoi(argv[1]);
+    const int threads_per_block = atoi(argv[2]);
+    float *A, *L, *U;
+
+    A = (float*)malloc(sizeof(float) * n * n);
+    L = (float*)malloc(sizeof(float) * n * n);
+    U = (float*)malloc(sizeof(float) * n * n);
+    srand((unsigned)time(0));
+    
+    for(int i=0; i < n; i++){
+        A[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+    }
+
+
+    cudaEvent_t start;
+    cudaEvent_t stop;
+    float ms;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
+   
+    luDecompositionCuda(L, U, A, n, threads_per_block);
+   
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&ms, start, stop); 
+    
+    std::cout << L[0] << std::endl;
+    std::cout << ms << std::endl;
+    std::cout << std::endl;
+    free(A);
+    free(L);
+    free(U);
+    return 0;
 }

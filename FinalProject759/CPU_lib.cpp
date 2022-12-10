@@ -183,14 +183,13 @@ void HouseholderQRElimination(vector<vector<double>>& A, vector<double>& d) {
 void LU_array(float** a, float** l, float** u, int size){
 	for (int i = 0; i < size; i++){
 		for (int j = 0; j < size; j++){
-			if (j < i)
-			{
+			if (j < i){
 				l[j][i] = 0;
 				continue;
 			}
 			l[j][i] = a[j][i];
 			for (int k = 0; k < i; k++){
-				l[j][i] = l[j][i] - l[j][k] * u[k][i];
+				l[j][i] -= l[j][k] * u[k][i];
 			}
 		}
 		for (int j = 0; j < size; j++){
@@ -204,7 +203,7 @@ void LU_array(float** a, float** l, float** u, int size){
 			}
 			u[i][j] = a[i][j] / l[i][i];
 			for (int k = 0; k < i; k++){
-				u[i][j] = u[i][j] - ((l[i][k] * u[k][j]) / l[i][i]);
+				u[i][j] -= ((l[i][k] * u[k][j]) / l[i][i]);
 			}
 		}
 	}
