@@ -21,7 +21,7 @@ void luDecompositionOpenMP(float* L, float* U, const float* A, int n){
             } else {
                 L[j * n + i] = A[j * n + i];
                 for (int k = 0; k < i; k++) {
-                    L[j * n + i] = L[j * n + i] - L[j * n + k] * U[n * k + i];
+                    L[j * n + i] -= L[j * n + k] * U[n * k + i];
                 }
             }
             if (j < i) {
@@ -31,14 +31,11 @@ void luDecompositionOpenMP(float* L, float* U, const float* A, int n){
             } else {
                 U[n * i + j] = A[n * i + j] / L[n * i + i];
                 for (int k = 0; k < i; k++) {
-                    U[n * i + j] = U[n * i + j] - ((L[n * i + k] * U[n * k + j]) / L[n * i + i]);
+                    U[n * i + j] -= ((L[n * i + k] * U[n * k + j]) / L[n * i + i]);
                 }
             }
         }
     }
-
-
-
 }
 
 int main(int argc, char **argv){
@@ -58,8 +55,9 @@ int main(int argc, char **argv){
     
     for(int i=0; i < n * n; i++){
         A[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+        L[i] = 0;
+        U[i] = 0;
     }
-
 
 
     start = high_resolution_clock::now();
@@ -70,8 +68,9 @@ int main(int argc, char **argv){
     end = high_resolution_clock::now();
     duration_sec = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
 
-    std::cout << duration_sec.count() << "\n";
-    std::cout << L[n * n - 1] << std::endl;
+    
+    std::cout << U[n * n - 1] << std::endl;
+    std::cout << duration_sec.count() << std::endl;
     std::cout << std::endl;
     free(A);
     free(L);
