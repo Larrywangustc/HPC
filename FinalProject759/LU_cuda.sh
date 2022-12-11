@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1 --cpus-per-task=10
 #SBATCH --gres=gpu:1
 #SBATCH --gpus-per-task=1
-#SBATCH -o Slurm.out -e Slurm.err
+#SBATCH -o Slurm_cuda.out -e Slurm.err
 
 module load nvidia/cuda/11.6.0
 

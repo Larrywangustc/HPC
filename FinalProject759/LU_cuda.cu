@@ -16,7 +16,6 @@ __global__ void lu_decomposition_kernel(float *A, float *L, float *U, const int 
     int x = threadIdx.x;
     int y = threadIdx.y;
 
-
     __shared__ float part_sum[BSZ][BSZ];
 
     for (int k = 0; k < N; ++k)
@@ -71,7 +70,7 @@ int main(int argc, char **argv){
     U = (float*)malloc(sizeof(float) * n * n);
     srand((unsigned)time(0));
     
-    for(int i=0; i < n; i++){
+    for(int i=0; i < n * n; i++){
         A[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
     }
 
