@@ -1,5 +1,3 @@
-#include <chrono>
-#include <ratio>     
 #include <iostream>
 #include <thrust/copy.h>
 #include <thrust/transform.h>
@@ -23,10 +21,12 @@ int main(int argc, char **argv){
     }
 
     thrust::device_vector<float> d_A(n * n);
-    float *d_U = new float[n * n];
-    float *d_L = new float[n * n];
+    float *d_U;
+    float *d_L;
     thrust::copy(A, A + n * n, d_A.begin());
-    
+    cudaMalloc(&d_L, n * n * sizeof(float));
+    cudaMalloc(&d_U, n * n * sizeof(float));
+
     cudaEvent_t start;
     cudaEvent_t stop;
     float ms;
@@ -37,6 +37,7 @@ int main(int argc, char **argv){
     thrust::transform(
         thrust::make_zip_iterator(thrust::make_tuple(d_A.begin(), d_A.begin() + n * n)),
         thrust::make_zip_iterator(thrust::make_tuple(d_A.end(), d_A.end() + n * n)),
+        d_A.begin(), 
         d_L, d_U,
         [n, &d_L, &d_U, &d_A](thrust::tuple<float, float> t) {
             int i = thrust::get<0>(t);

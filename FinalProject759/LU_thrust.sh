@@ -7,7 +7,7 @@
 #SBATCH --gpus-per-task=1
 #SBATCH -o Slurm_thrust.out -e Slurm.err
 
-module load nvidia/cuda/11.6.0 gcc/9.4.0
+module load gcc/9.4.0 nvidia/cuda/11.6.0 
 
 
 nvcc LU_thrust.cu -Xcompiler -O3 -Xcompiler -Wall -Xptxas -O3 -std c++17 -o LU_thrust
