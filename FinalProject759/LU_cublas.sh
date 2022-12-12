@@ -11,4 +11,4 @@ module load nvidia/cuda/11.6.0
 
 nvcc LU_cublas.cu -Xcompiler -O3 -Xcompiler -Wall -Xptxas -O3 -lcublas -std c++17 -o LU_cublas
 
-./LU_cublas 2048
+./LU_cublas 2048 4

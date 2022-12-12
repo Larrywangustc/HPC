@@ -1,4 +1,0 @@
-LU_cublas.cu(34): error: identifier "cublasSgetrf" is undefined
-
-1 error detected in the compilation of "LU_cublas.cu".
-/var/spool/slurmd/job294141/slurm_script: line 14: 597012 Segmentation fault      (core dumped) ./LU_cublas 2048
