@@ -1,66 +1,75 @@
 #include <iostream>
-#include <cmath>
 #include <omp.h>
+#include <stdlib.h>             
+#include <stdio.h>         
+#include <chrono>
+#include <ratio>     
+#include <fstream>                                    
+#include <iomanip>              
+#include <time.h>      
 
-// Matrix size
-const int N = 1024;
+using namespace std;              
+using std::chrono::high_resolution_clock;
+using std::chrono::duration;
 
-// Matrix of coefficients
-double A[N][N];
-
-// Vector of constants
-double b[N];
-
-// Vector of variables
-double x[N];
-
-// Number of iterations +
-const int MAX_ITER = 1000;
-
-// Tolerance
-const double TOL = 1e-6;
-
-int main() {
-  // Initialize matrix A and vectors b and x with some values
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
-      A[i][j] = (double)i + j;
-    }
-    b[i] = (double)i;
-    x[i] = 0;
-  }
-
-  // Jacobi method
-  for (int k = 0; k < MAX_ITER; k++) {
-    double max_error = 0;
-
-    // Update variables in parallel
+void jacobiOnHost(float* x_next, float* A, float* x_now, float* b, int N){
+    float sigma;
     #pragma omp parallel for
-    for (int i = 0; i < N; i++) {
-      double sum = 0;
-      for (int j = 0; j < N; j++) {
-        if (i != j) {
-          sum += A[i][j] * x[j];
+    for (int i=0; i<N; i++){
+        sigma = 0.0;
+        for (int j=0; j<N; j++)
+        {
+            if (i != j)
+                sigma += A[i*N + j] * x_now[j];
         }
-      }
-      double new_x = (b[i] - sum) / A[i][i];
-      double error = std::fabs(new_x - x[i]);
-      if (error > max_error) {
-        max_error = error;
-      }
-      x[i] = new_x;
+        x_next[i] = (b[i] - sigma) / A[i*N + i];
+    }
+}
+
+
+int main(int argc, char **argv){
+    const int n = atoi(argv[1]);
+    const int t = atoi(argv[2]);
+    int iter = 1000;
+    high_resolution_clock::time_point start;
+    high_resolution_clock::time_point end;
+    duration<double, std::milli> duration_sec;
+
+    float *A, *b, *x_next, *x_now;
+
+    A = (float*)malloc(sizeof(float) * n * n);
+    b = (float*)malloc(sizeof(float) * n);
+    x_next = (float*)malloc(sizeof(float) * n);
+    x_now = (float*)malloc(sizeof(float) * n);
+    srand((unsigned)time(0));
+    
+    for(int i=0; i < n * n; i++){
+        A[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+    }
+    for(int i=0; i < n; i++){
+        b[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+        x_now[i] = 0;
+        x_next[i] = 0;
     }
 
-    // Check for convergence
-    if (max_error < TOL) {
-      break;
+    start = high_resolution_clock::now();
+    
+    omp_set_num_threads(t);
+    #pragma omp parallel for
+    for (int k=0; k<iter; k++){
+        jacobiOnHost(x_next, A, x_now, b, n);
+        for (int i=0; i<n; i++)
+            x_now[i] = x_next[i];
     }
-  }
 
-  // Print result
-  for (int i = 0; i < N; i++) {
-    std::cout << "x[" << i << "] = " << x[i] << std::endl;
-  }
+    end = high_resolution_clock::now();
+    duration_sec = std::chrono::duration_cast<duration<double, std::milli>>(end - start);
 
-  return 0;
+    std::cout << duration_sec.count() << std::endl;
+    std::cout << std::endl;
+    free(A);
+    free(x_next);
+    free(x_now);
+    free(b);
+    return 0;
 }
