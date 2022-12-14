@@ -31,8 +31,7 @@ __constant__ float b_s[512];
 __global__ void jacobiOptimizedOnDevice(float* d_x_next, float* d_A, float* d_x_now,  int N){
     __shared__ float xdsn[Tile_Width];
     __shared__ float xdsx[Tile_Width];
-    // Optimization step 1: tiling
-    //read the matrix tile into shared memory
+
     int bx = blockIdx.x;
     int tx = threadIdx.x;
     int xIndex = bx * Tile_Width + tx;

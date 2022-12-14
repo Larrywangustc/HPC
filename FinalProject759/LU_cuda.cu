@@ -7,16 +7,17 @@
 #include <time.h>               
 #include <cuda_runtime.h>       
 using namespace std;              
-
+#define Tile_Width 32
 #define BSZ 32
 
-__global__ void lu_decomposition_kernel(const float *A, float *L, float *U, const int N)
-{
-    // Declare thread IDs and block size
-    int x = threadIdx.x;
-    int y = threadIdx.y;
-
-    extern __shared__ float part_sum[BSZ * BSZ];
+__global__ void lu_decomposition_kernel(const float *A, float *L, float *U, const int N){
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int bx = blockIdx.x;
+    int by = blockIdx.y;
+    int y = by * blockDim.y + ty;
+    int x = bx * blockDim.x + tx;
+    __shared__ float part_sum[BSZ * BSZ];
 
     for (int k = 0; k < N; ++k)
     {
@@ -34,12 +35,88 @@ __global__ void lu_decomposition_kernel(const float *A, float *L, float *U, cons
 }
 
 
+__global__ void luDecompositionOptimized_kernel(const float* d_A, float* d_L, float* d_U, int N)
+{
+    // Declare shared memory for the tile of the input matrix
+    __shared__ float tile[Tile_Width][Tile_Width];
+
+    // Load the tile of the input matrix into shared memory
+    int bx = blockIdx.x;
+    int by = blockIdx.y;
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int row = by * blockDim.y + ty;
+    int col = bx * blockDim.x + tx;
+    if (row < N && col < N) {
+        tile[ty][tx] = d_A[row * N + col];
+    }
+
+    for (int k = 0; k < N; k++) {
+        if (row == k) {
+            d_L[row * N + col] = 1.0f; 
+        }
+        if (row > k) {
+            d_L[row * N + col] = tile[row][k] / tile[k][k];
+            for (int i = k+1; i < Tile_Width; i++) {
+                tile[row][i] -= d_L[row * N + col] * tile[k][i];
+            }
+        }
+
+        if (row <= k) {
+            d_U[row * N + col] = tile[row][col];
+        }
+    }
+}
+
+
+__global__ void lu_decomposition_kernel(const float *A, float *L, float *U, const int N){
+    int ty = threadIdx.y;
+    int by = blockIdx.y;
+    int y = by * blockDim.y + ty;
+
+    if (y >= N) return;  // Check that y is within bounds
+
+    for (int k = 0; k < N; ++k)
+    {
+        // Calculate the elements of the lower triangular matrix
+        for (int i = 0; i < k; ++i)
+        {
+            L[k * N + y] -= A[k * N + i] * L[i * N + y];
+        }
+
+        if (k == y)
+        {
+            L[k * N + y] = 1;  // Diagonal elements are 1
+        }
+        else
+        {
+            L[k * N + y] = A[k * N + y];
+        }
+
+        // Calculate the elements of the upper triangular matrix
+        for (int i = 0; i < k; ++i)
+        {
+            U[k * N + y] -= A[k * N + i] * U[i * N + y];
+        }
+
+        if (k == y)
+        {
+            U[k * N + y] = A[k * N + y] / L[k * N + y];  // Diagonal elements are the original value divided by the corresponding element in the lower triangular matrix
+        }
+        else
+        {
+            U[k * N + y] = A[k * N + y] / L[k * N + y];
+        }
+    }
+}
+
 
 void luDecompositionCuda(float* L, float* U, const float* A, int n, int block_dim){
     int k = (n - 1) / block_dim + 1;
     dim3 dimBlock(block_dim, block_dim);
     dim3 dimGrid(k, k);
-    lu_decomposition_kernel<<<dimGrid, dimBlock, block_dim * block_dim * sizeof(float)>>>(A, L, U, n);
+    lu_decomposition_kernel<<<dimGrid, dimBlock>>>(A, L, U, n);
+    //luDecompositionOptimized_kernel<<<dimGrid, dimBlock, Tile_Width * Tile_Width * sizeof(float)>>>(A, L, U, n);
 
 }
 

@@ -1,0 +1,2 @@
+LU_cuda.cu(72): warning #177-D: variable "k" was declared but never referenced
+
