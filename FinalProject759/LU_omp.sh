@@ -8,5 +8,8 @@
 
 g++ LU_omp.cpp -Wall -O3 -std=c++17 -o LU_omp -fopenmp
 
-./LU_omp 2048 10
-
+for i in {5..12}
+do
+   n=$((2**i))
+   ./LU_omp $n 10
+done

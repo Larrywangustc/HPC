@@ -10,30 +10,30 @@ using namespace std;
 #define Tile_Width 32
 #define BSZ 32
 
-__global__ void lu_decomposition_kernel(const float *A, float *L, float *U, const int N){
+__global__ void lu_decomposition_kernel(const float *A, float *L, float *U, const int N)
+{
+    // Calculate the indices for the thread and block
     int tx = threadIdx.x;
     int ty = threadIdx.y;
     int bx = blockIdx.x;
     int by = blockIdx.y;
     int y = by * blockDim.y + ty;
     int x = bx * blockDim.x + tx;
-    __shared__ float part_sum[BSZ * BSZ];
-
+    __shared__ float part_sum[BSZ][BSZ];
     for (int k = 0; k < N; ++k)
     {
-        part_sum[y * BSZ + x] = 0;
+        part_sum[ty][tx] = 0;
         for (int i = 0; i < k; ++i)
         {
-            part_sum[y * BSZ + x] += A[k * N + i] * A[i * N + y];
+            part_sum[ty][tx] += A[k * N + i] * A[i * N + y];
         }
 
         __syncthreads();
 
-        L[k * N + y] = (y == k) ? 1 : A[k * N + y] - part_sum[y * BSZ + x];
-        U[k * N + y] = (y == k) ? A[k * N + k] - part_sum[y * BSZ + x] : 0;
+        L[k * N + y] = (y == k) ? 1 : A[k * N + y] - part_sum[ty][tx];
+        U[k * N + y] = (y == k) ? A[k * N + k] - part_sum[ty][tx] : 0;
     }
 }
-
 
 __global__ void luDecompositionOptimized_kernel(const float* d_A, float* d_L, float* d_U, int N)
 {
@@ -45,67 +45,27 @@ __global__ void luDecompositionOptimized_kernel(const float* d_A, float* d_L, fl
     int by = blockIdx.y;
     int tx = threadIdx.x;
     int ty = threadIdx.y;
-    int row = by * blockDim.y + ty;
-    int col = bx * blockDim.x + tx;
+    int row = bx * Tile_Width + tx;
+    int col = by * Tile_Width + ty;
     if (row < N && col < N) {
         tile[ty][tx] = d_A[row * N + col];
     }
 
-    for (int k = 0; k < N; k++) {
-        if (row == k) {
+    // Compute the L and U matrices
+    int idx = row * Tile_Width + tx;
+    if (idx < N) {
+        if (row == idx) {
             d_L[row * N + col] = 1.0f; 
         }
-        if (row > k) {
-            d_L[row * N + col] = tile[row][k] / tile[k][k];
-            for (int i = k+1; i < Tile_Width; i++) {
-                tile[row][i] -= d_L[row * N + col] * tile[k][i];
+        if (row > idx) {
+            d_L[row * N + col] = tile[row][idx] / tile[idx][idx];
+            for (int i = idx+1; i < Tile_Width; i++) {
+                tile[row][i] -= d_L[row * N + col] * tile[idx][i];
             }
         }
 
-        if (row <= k) {
+        if (row <= idx) {
             d_U[row * N + col] = tile[row][col];
-        }
-    }
-}
-
-
-__global__ void lu_decomposition_kernel(const float *A, float *L, float *U, const int N){
-    int ty = threadIdx.y;
-    int by = blockIdx.y;
-    int y = by * blockDim.y + ty;
-
-    if (y >= N) return;  // Check that y is within bounds
-
-    for (int k = 0; k < N; ++k)
-    {
-        // Calculate the elements of the lower triangular matrix
-        for (int i = 0; i < k; ++i)
-        {
-            L[k * N + y] -= A[k * N + i] * L[i * N + y];
-        }
-
-        if (k == y)
-        {
-            L[k * N + y] = 1;  // Diagonal elements are 1
-        }
-        else
-        {
-            L[k * N + y] = A[k * N + y];
-        }
-
-        // Calculate the elements of the upper triangular matrix
-        for (int i = 0; i < k; ++i)
-        {
-            U[k * N + y] -= A[k * N + i] * U[i * N + y];
-        }
-
-        if (k == y)
-        {
-            U[k * N + y] = A[k * N + y] / L[k * N + y];  // Diagonal elements are the original value divided by the corresponding element in the lower triangular matrix
-        }
-        else
-        {
-            U[k * N + y] = A[k * N + y] / L[k * N + y];
         }
     }
 }
@@ -116,7 +76,7 @@ void luDecompositionCuda(float* L, float* U, const float* A, int n, int block_di
     dim3 dimBlock(block_dim, block_dim);
     dim3 dimGrid(k, k);
     lu_decomposition_kernel<<<dimGrid, dimBlock>>>(A, L, U, n);
-    //luDecompositionOptimized_kernel<<<dimGrid, dimBlock, Tile_Width * Tile_Width * sizeof(float)>>>(A, L, U, n);
+    //luDecompositionOptimized_kernel<<<dimGrid, dimBlock>>>(A, L, U, n);
 
 }
 

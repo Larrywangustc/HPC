@@ -18,14 +18,20 @@ int main(int argc, char **argv){
     
     for(int i=0; i < n * n; i++){
         A[i] = float(-1.0) + (rand()) / ( static_cast <float> (RAND_MAX/2.0));
+        L[i] = 0;
+        U[i] = 0;
     }
 
     thrust::device_vector<float> d_A(n * n);
-    float *d_U;
-    float *d_L;
+    //float *d_U;
+    //float *d_L;
     thrust::copy(A, A + n * n, d_A.begin());
-    cudaMalloc(&d_L, n * n * sizeof(float));
-    cudaMalloc(&d_U, n * n * sizeof(float));
+    thrust::device_vector<float> d_L(n * n);
+    thrust::device_vector<float> d_U(n * n);
+    thrust::copy(L, L + n * n, d_L.begin());
+    thrust::copy(U, U + n * n, d_U.begin());
+    //cudaMalloc(&d_L, n * n * sizeof(float));
+    //cudaMalloc(&d_U, n * n * sizeof(float));
 
     cudaEvent_t start;
     cudaEvent_t stop;
@@ -38,7 +44,7 @@ int main(int argc, char **argv){
         thrust::make_zip_iterator(thrust::make_tuple(d_A.begin(), d_A.begin() + n * n)),
         thrust::make_zip_iterator(thrust::make_tuple(d_A.end(), d_A.end() + n * n)),
         d_A.begin(), 
-        d_L, d_U,
+        d_L.begin(), d_U.begin(),
         [n, &d_L, &d_U, &d_A](thrust::tuple<float, float> t) {
             int i = thrust::get<0>(t);
             int j = thrust::get<1>(t);
@@ -67,10 +73,6 @@ int main(int argc, char **argv){
     cudaEventSynchronize(stop);
     cudaEventElapsedTime(&ms, start, stop); 
 
-    cudaMemcpy(L, d_L, n * n * sizeof(float), cudaMemcpyDeviceToHost);
-    cudaMemcpy(U, d_U, n * n * sizeof(float), cudaMemcpyDeviceToHost);
-
-    std::cout << L[0] << std::endl;
     std::cout << ms << std::endl;
     std::cout << std::endl;
     return 0;

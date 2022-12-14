@@ -9,60 +9,53 @@
 using namespace std;              
 #define Tile_Width 32
 
-__global__ void jacobiUnOptimizedOnDevice(float* x_next_u, float* A_u, float* x_now_u, float* b_u, int N){
-    // Optimization step 1: tiling
+__global__ void jacobiOnDevice_v1(float* x_next, float* A, float* x_now, float* b, int N){
     int idx = blockIdx.x*blockDim.x + threadIdx.x;
-    
-    if (idx < N)
-    {
-        float sigma = 0.0;
-        
+    if (idx < N){
+        float part_sum = 0.0; 
         int idx_Ai = idx*N;
-        
         for (int j=0; j<N; j++)
             if (idx != j)
-                sigma += A_u[idx_Ai + j] * x_now_u[j];
-        x_next_u[idx] = (b_u[idx] - sigma) / A_u[idx_Ai + idx];
+                part_sum += A[idx_Ai + j] * x_now[j];
+        x_next[idx] = (b[idx] - part_sum) / A[idx_Ai + idx];
     }
 }
 
-
 __constant__ float b_s[512];
-__global__ void jacobiOptimizedOnDevice(float* d_x_next, float* d_A, float* d_x_now,  int N){
+__global__ void jacobiOnDevice_v2(float* x_next, float* A, float* x_now,  int N){
     __shared__ float xdsn[Tile_Width];
     __shared__ float xdsx[Tile_Width];
 
     int bx = blockIdx.x;
     int tx = threadIdx.x;
     int xIndex = bx * Tile_Width + tx;
-    
     int idx = xIndex * Tile_Width + threadIdx.x;
     if (idx < N) {
-        float sigma = 0.0;
+        float part_sum = 0.0;
         int idx_Ai = idx * N;
         for (int j=0; j<Tile_Width; j++) {
             if (idx != j) {
-                xdsn[tx] = d_x_now[idx*Tile_Width];
-                xdsx[tx] = d_x_next[idx * Tile_Width];
-                sigma += d_A[idx_Ai + j] * xdsn[tx];           
-                xdsx[tx] = (b_s[idx] - sigma) / d_A[idx_Ai + idx];
+                xdsn[tx] = x_now[idx*Tile_Width];
+                xdsx[tx] = x_next[idx * Tile_Width];
+                part_sum += A[idx_Ai + j] * xdsn[tx];           
+                xdsx[tx] = (b_s[idx] - part_sum) / A[idx_Ai + idx];
             }
         }
         for (int k=0; k<N; k++) {
-            d_x_next[k* N] = xdsx[tx];
+            x_next[k* N] = xdsx[tx];
         }
     }
 }
 
 int main(int argc, char **argv){
     const int n = atoi(argv[1]);
-    const int threads_per_block = atoi(argv[2]);
+    const int tileSize = atoi(argv[2]);
 
     float *A, *b_h, *x_d, *x_next, *x_now;
     float *x_next_u, *x_now_u, *A_u, *b_u;
     float *d_x_now, *d_x_next, *d_A, *b;
     
-    int iter = 1000, tileSize = 32;
+    int iter = 1000;
     
     x_next = (float *) malloc(n * sizeof(float));
     A = (float *) malloc(n * n * sizeof(float));
@@ -115,11 +108,8 @@ int main(int argc, char **argv){
     cudaEventCreate(&stop);
     cudaEventRecord(start);
 
-    for (int k=0; k<iter; k++){
-        if (k%2)
-            jacobiUnOptimizedOnDevice <<< nTiles, tileSize >>> (x_now_u, A_u, x_next_u, b_u, n);
-        else     
-            jacobiUnOptimizedOnDevice <<< nTiles, tileSize >>> (x_now_u, A_u, x_next_u, b_u, n);
+    for (int k=0; k<iter; k++){   
+        jacobiOnDevice_v1 <<< nTiles, tileSize >>> (x_now_u, A_u, x_next_u, b_u, n);
         cudaMemcpy(x_now_u, x_next_u, sizeof(float)*n, cudaMemcpyDeviceToDevice);
     }
 
@@ -133,10 +123,7 @@ int main(int argc, char **argv){
     cudaEventRecord(start);
 
     for (int k=0; k<iter; k++){
-        if (k%2)
-            jacobiOptimizedOnDevice <<< dimGrid, dimBlock >>> (d_x_now,  d_A, d_x_next, n);
-        else
-            jacobiOptimizedOnDevice <<< dimGrid, dimBlock >>> (d_x_now,  d_A, d_x_next, n);
+        jacobiOnDevice_v2 <<< dimGrid, dimBlock >>> (d_x_now,  d_A, d_x_next, n);
         cudaMemcpy(d_x_now, d_x_next, sizeof(float)*n, cudaMemcpyDeviceToDevice);
     }    
     
